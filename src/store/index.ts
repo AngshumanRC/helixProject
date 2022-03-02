@@ -1,14 +1,38 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
 export interface stateData{
-  todos: any[],
-  pos: any[],
-  ReportTool: any[],
+  todos: [{
+        id:number,
+        productName: string,
+        productGender: string,
+        productSize: string,
+        productColor: string,
+        productPrice: number,
+        productTax:number,
+  }],
+  // todos: any[],
+  // pos: any[],
+  pos: [{
+    posId:number,
+    delId:number,
+    productPosCount:number,
+    productPosName:string,
+    productQuantity: number,
+    productTotalPrice: 400,
+    productPosGender:string,
+    productPosSize:string,
+    productPosColor:string,
+    productPosTax:number,
+    productPrice:number,
+  }],
+  // ReportTool: any[],
+  ReportTool:[],
   checkOutHeader: boolean,
-  total_price: number,
+  totalPrice: number,
   menu:boolean,
   switchProducts:boolean,
   switchAddProduct:boolean,
@@ -28,32 +52,32 @@ export interface stateData{
 export default new Vuex.Store<stateData>({
   state: {
     todos:[
-      // {
-      //   id:1,
-      //   product_name: "T-shirt",
-      //   product_gender: "Male",
-      //   product_size: "Medium",
-      //   product_color: "Red",
-      //   product_price: 200,
-      //   product_tax:30,
-      // },
+      {
+        id:1,
+        productName: "T-shirt",
+        productGender: "Male",
+        productSize: "Medium",
+        productColor: "Red",
+        productPrice: 200,
+        productTax:30,
+      },
     ],
     pos:[
-//       {
-//         pos_id:1,
-//         del_id:1,
-//         product_pos_count:1,
-//         product_pos_name:"Shirt",
-//         product_quantity: 1,
-//         product_total_price: 400,
-//         product_pos_gender:"Male",
-//         product_pos_size:"Large",
-//         product_pos_color:"Red",
-//         product_pos_tax:50,
-//         product_price:400,
-//     },
+      {
+        posId:1,
+        delId:1,
+        productPosCount:1,
+        productPosName:"Shirt",
+        productQuantity: 1,
+        productTotalPrice: 400,
+        productPosGender:"Male",
+        productPosSize:"Large",
+        productPosColor:"Red",
+        productPosTax:50,
+        productPrice:400,
+    },
     ],
-    ReportTool:[{}
+    ReportTool:[
       // {
       // pos_id:2,
       // product_pos_name:"T-shirt",
@@ -66,7 +90,7 @@ export default new Vuex.Store<stateData>({
       // }
     ],
     checkOutHeader:false,
-    total_price:0,
+    totalPrice:0,
     menu:false,
     switchProducts:true,
     switchAddProduct:true,
@@ -87,7 +111,7 @@ export default new Vuex.Store<stateData>({
   getters: {
     ReportTool:(state) => state.ReportTool,
     checkOutHeader: (state) => state.checkOutHeader,
-    total_price: (state) => state.total_price,
+    totalPrice: (state) => state.totalPrice,
     allPos: (state) => state.pos,
     allTodos: (state) => state.todos,
     menu: (state) => state.menu,
@@ -106,6 +130,15 @@ export default new Vuex.Store<stateData>({
     count: (state) => state.count,
   },
   actions: {
+    reportToolListingAction({commit},data) :void{
+      commit('reportToolListingActionMutate',data)
+    },
+    posListingAction({commit},data){
+      commit('posListingActionMutate',data)
+    },
+    productListingAction({commit},data){
+      commit('productListingActionMutate',data)
+    },
     increaseCount({commit}){
       commit('increaseCountMutate')
     },
@@ -177,37 +210,62 @@ export default new Vuex.Store<stateData>({
     },
   },
   mutations: {
+    reportToolListingActionMutate(state,data){
+      state.ReportTool = data
+    },
+    posListingActionMutate(state,data){
+      state.pos = data
+    },
+    productListingActionMutate(state,data){
+      state.todos = data
+    },
     increaseCountMutate(state){
       state.count = state.count + 1
     },
-    reportToolMutate(state){
-      state.ReportTool.push(state.pos)
-      state.pos=[]
-      state.checkOutHeader = false;
-    },
-    allDeleteMutate(state){
-      state.pos.splice(0,state.pos.length)
-      state.total_price = 0;
-      state.checkOutHeader = false;
-    },
-    deletePosMutate(state, id){
-      state.pos = state.pos.filter((pos) => pos.del_id != id);
-      let total = 0;
-      state.pos.forEach((elem) => {
-        total = total + elem.product_total_price
+    async reportToolMutate(state){
+      const res = await axios.get('http://localhost:3000/pos')
+      // console.log('shoppingcart',res.data)
+      await axios.post('http://localhost:3000/reporttool',res.data)
+      // state.ReportTool.push(state.pos)
+      // state.pos=[]
+      const resp = await axios.get('http://localhost:3000/pos')
+      resp.data.forEach((elem: any) => {
+        const res = axios.delete('http://localhost:3000/pos/'+elem.id)
       })
-      state.total_price = total;
+      state.totalPrice = 0;
+      state.checkOutHeader = false;
+      state.checkOutHeader = false;
+    },
+    async allDeleteMutate(state){
+      // state.pos.splice(0,state.pos.length)
+      const resp = await axios.get('http://localhost:3000/pos')
+      resp.data.forEach((elem: any) => {
+        const res = axios.delete('http://localhost:3000/pos/'+elem.id)
+      })
+      state.totalPrice = 0;
+      state.checkOutHeader = false;
+    },
+    async deletePosMutate(state, id){
+      const res = await axios.delete('http://localhost:3000/pos/'+id)
+      // state.pos = state.pos.filter((pos) => pos.del_id != id);
+      const resp = await axios.get('http://localhost:3000/pos')
+      let total = 0;
+      resp.data.forEach((elem: any) => {
+        total = total + elem.productTotalPrice
+      })
+      state.totalPrice = total;
       total = 0;
-      if(state.total_price == 0){
+      if(state.totalPrice == 0){
         state.checkOutHeader = false
       }
     },
-    calculateTotalPriceMutate(state){
+    async calculateTotalPriceMutate(state){
       let total = 0;
-      state.pos.forEach((elem) => {
-        total = total + elem.product_total_price
+      const resp = await axios.get('http://localhost:3000/pos')
+      resp.data.forEach((elem: any) => {
+        total = total + elem.productTotalPrice
       })
-      state.total_price = total;
+      state.totalPrice = total;
       total = 0;
     },
     checkOutHeaderMutate(state){
@@ -298,28 +356,58 @@ export default new Vuex.Store<stateData>({
     changeSwitchTaxMutate(state){
       state.switchTax = !state.switchTax
     },
-    addTodoMutate(state, todo) {
-      state.todos.push(todo);
+    async addTodoMutate(state, todo) {
+      const res = await axios.post('http://localhost:3000/todos',todo)
     },
-    addToCartMutate(state,data){
-    const temp = state.pos.filter((item) => {
-      return item.pos_id === data.pos_id
+    async addToCartMutate(state,data){
+      const res = await axios.get('http://localhost:3000/pos')
+    const temp = res.data.filter((item: any) => {
+      return item.posId === data.posId
     });
     if(temp.length>0){
-      temp[0].product_quantity = temp[0].product_quantity + data.product_quantity
-      temp[0].product_total_price = temp[0].product_total_price + data.product_price*data.product_quantity 
+      let updatedProductQuantity=0;
+      let updatedProductTotalPrice=0;
+      
+      temp[0].productQuantity = temp[0].productQuantity + data.productQuantity
+      updatedProductQuantity = temp[0].productQuantity
+      temp[0].productTotalPrice = temp[0].productTotalPrice + data.productPrice*data.productQuantity 
+      updatedProductTotalPrice = temp[0].productTotalPrice
+
+      const data4={...temp[0]}
+        data4.posId = data.posId,
+        data4.delId = data.delId,
+        data4.productPrice = data.productPrice,
+        data4.productPosCount = data.productPosCount,
+        data4.productPosName = data.productPosName,
+        data4.productPosGender = data.productPosGender,
+        data4.productPosSize = data.productPosSize,
+        data4.productPosColor = data.productPosColor,
+        data4.productPosTax = data.productPosTax,
+        data4.productPosDate = data.productPosDate,
+        data4.productPosTime = data.productPosTime,
+        data4.productPosTimestamp = data.productPosTimestamp,
+        data4.productQuantity = updatedProductQuantity,
+        data4.productTotalPrice = updatedProductTotalPrice
+      
+      const res = await axios.put('http://localhost:3000/pos/'+ temp[0].id,data4)
+
     }
     else{
-      state.pos.push(data)
+      // state.pos.push(data)
+      const res = await axios.post('http://localhost:3000/pos',data)
     }        
     },
-    deleteTodoMutate(state, id){
-      state.todos = state.todos.filter((todo) => todo.id != id);
+    async deleteTodoMutate(state, id){
+      const res = await axios.delete('http://localhost:3000/todos/'+id)
+      // state.todos = state.todos.filter((todo) => todo.id != id);
+      window.location.reload();
     },
-    updateTodoMutate(state, todo){
+    async updateTodoMutate(state, todo){
       const index = state.todos.findIndex((t) => t.id == todo.id);
-      state.todos.splice(index, 1, todo)
-      console.log(index)
+      const id = state.todos[index].id
+      const res = await axios.put('http://localhost:3000/todos/'+id,todo)
+      // state.todos.splice(index, 1, todo)
+      // console.log(index)
     }
   },
 })

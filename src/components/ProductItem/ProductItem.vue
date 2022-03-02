@@ -4,12 +4,12 @@
       <template v-slot:default>
         <tbody>
           <tr class="product_item">
-            <td class="mt-2">{{ todo.product_name }}</td>
-            <td class="mt-2">{{ todo.product_gender }}</td>
-            <td class="mt-2">{{ todo.product_size }}</td>
-            <td class="mt-2">{{ todo.product_color }}</td>
-            <td class="mt-2">{{ todo.product_price }}</td>
-            <td class="mt-2">{{ todo.product_tax }}</td>
+            <td class="mt-2">{{ todo.productName }}</td>
+            <td class="mt-2">{{ todo.productGender }}</td>
+            <td class="mt-2">{{ todo.productSize }}</td>
+            <td class="mt-2">{{ todo.productColor }}</td>
+            <td class="mt-2">{{ todo.productPrice }}</td>
+            <td class="mt-2">{{ todo.productTax }}</td>
             <td class="mt-2">
               <span v-if="switchEditing">
               <router-link :to="{ name: 'Update', params: { id: todo.id } }">
@@ -45,9 +45,6 @@ import { mapActions, mapGetters } from "vuex";
   },
 })
 export default class ProductItem extends Vue {
-  console(todo: any) {
-    console.log(todo);
-  }
 }
 </script>
 <style scoped>

@@ -43,8 +43,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ProductItem from '../components/ProductItem.vue'
-import { mapGetters } from 'vuex'
+import ProductItem from '../../components/ProductItem/ProductItem.vue'
+import { mapActions, mapGetters } from 'vuex'
+import axios from 'axios'
 
 @Component({
   components: {
@@ -54,8 +55,24 @@ import { mapGetters } from 'vuex'
        ...mapGetters(["allTodos","switchProducts","switchAddProduct"])
 
   },
+  methods:{
+    ...mapActions(["productListingAction"])
+  }
 })
-export default class Home extends Vue {}
+export default class Product extends Vue {
+
+  async mounted(){
+    const res = await axios.get('http://localhost:3000/todos')
+    this.$store.dispatch("productListingAction",res.data)
+  }
+
+  async updated(){
+    const res = await axios.get('http://localhost:3000/todos')
+    this.$store.dispatch("productListingAction",res.data)
+  }
+
+
+}
 </script>
 <style scoped>
 .product{

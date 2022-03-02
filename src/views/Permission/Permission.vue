@@ -45,9 +45,8 @@ import { mapActions, mapGetters } from 'vuex'
   },
 })
 export default class Permission extends Vue {
-    changeswitchProducts!: any;
     changeProducts(){
-        this.changeswitchProducts()
+        this.$store.dispatch("changeswitchProducts")
     }
 }
 </script>

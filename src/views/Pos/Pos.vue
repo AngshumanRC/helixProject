@@ -23,17 +23,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="pos in allPos" :key="pos.pos_id">
-          <td>{{pos.product_pos_name}}</td>
-          <td>{{pos.product_quantity}}</td>
-          <td>{{pos.product_total_price}}</td>
-          <td>&emsp;<v-icon small @click="deletePosI(pos.del_id)">mdi-delete-forever</v-icon></td>
+        <tr v-for="pos in allPos" :key="pos.posId">
+          <td>{{pos.productPosName}}</td>
+          <td>{{pos.productQuantity}}</td>
+          <td>{{pos.productTotalPrice}}</td>
+          <td>&emsp;<v-icon small @click="deletePosI(pos.id)">mdi-delete-forever</v-icon></td>
         </tr>
       </tbody>
     </template>
   </v-simple-table>
   <div v-if="checkOutHeader">
-  <h1 class="total_price">Total Amount Rs.{{total_price}}/-</h1>
+  <h1 class="total_price">Total Amount Rs.{{totalPrice}}/-</h1>
   <h5 class="inclusive">*inclusive of all taxes</h5>
   </div>
   <h1 class="buy_now_btn"><v-btn color="primary" @click="buyNow()">BUY NOW</v-btn></h1>
@@ -43,33 +43,46 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ProductPos from '../components/ProductPos.vue'
+import ProductPos from '../../components/shoppingCart/ProductPos.vue'
 import { mapActions, mapGetters } from 'vuex'
+import axios from 'axios'
 
 @Component({
   components: { 
     ProductPos 
   },
   computed:{
-    ...mapGetters(["allTodos","allPos","total_price","checkOutHeader"])
+    ...mapGetters(["allTodos","allPos","totalPrice","checkOutHeader"])
   },
   methods:{
-    ...mapActions(["deletePos","allDelete","reportTool"])
+    ...mapActions(["deletePos","allDelete","reportTool","productListingAction","posListingAction"])
   }
 })
 export default class Pos extends Vue {
-  deletePos!: any;
-  allDelete!: any;
-  reportTool!: any;
+
+
+   async mounted(){
+    const res = await axios.get('http://localhost:3000/todos')
+    const resp = await axios.get('http://localhost:3000/pos')
+    this.$store.dispatch("productListingAction",res.data)
+    this.$store.dispatch("posListingAction",resp.data)
+  }
+
+  async updated(){
+    const res = await axios.get('http://localhost:3000/todos')
+    const resp = await axios.get('http://localhost:3000/pos')
+     this.$store.dispatch("productListingAction",res.data)
+    this.$store.dispatch("posListingAction",resp.data)
+  }
 
 deletePosI(id: number){
-  this.deletePos(id)
+  this.$store.dispatch("deletePos",id)
 }
 allDeleteI(){
-  this.allDelete()
+  this.$store.dispatch("allDelete")
 }
 buyNow(){
-  this.reportTool()
+  this.$store.dispatch("reportTool")
 }
 }
 </script>

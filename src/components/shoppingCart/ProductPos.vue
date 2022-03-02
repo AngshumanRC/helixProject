@@ -3,12 +3,12 @@
     <v-card height="300" width="250">
       <v-row justify="center">
         <div class="main">
-        <h1 class="header">{{todo.product_name}}</h1>
+        <h1 class="header">{{todo.productName}}</h1>
         <div class="thc_cbd">
         <h4>Total THC : 0</h4>
         <h4>Total CBD : 0</h4>
         <br/>
-        <h4>Rs.{{todo.product_price}} per unit</h4>
+        <h4>Rs.{{todo.productPrice}} per unit</h4>
         </div>
         <div class="mt-4">
         <v-btn color="success"  @click="overlay = !overlay">Select</v-btn>
@@ -44,10 +44,6 @@ export default class ProductPos extends Vue {
       absolute= true;
       overlay= false;
       unit = 0;
-      addToCart!: any;
-      changeCheckOutHeader!: any
-      calculateTotalPrice!: any
-      increaseCount!: any;
 
       increment(): void{
         this.unit = this.unit + 1;
@@ -59,28 +55,32 @@ export default class ProductPos extends Vue {
       }
       addToCartI(todo: any){
         if(this.unit>0){  
-          this.increaseCount()                
-          this.addToCart({
-          pos_id:todo.id,
-          del_id:Date.now(),
-          product_price:todo.product_price, 
-          product_pos_count:this.$store.state.count,
-          product_pos_name: todo.product_name,
-          product_pos_gender:todo.product_gender,
-          product_pos_size:todo.product_size,
-          product_pos_color:todo.product_color,
-          product_pos_tax:todo.product_tax,
-          product_pos_date:new Date().getDate()+"-"+new Date().getMonth()+"-"+new Date().getFullYear(),
-          product_pos_time:new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
-          product_pos_timestamp:Date.now(),
-          product_quantity: this.unit,
-          product_total_price: todo.product_price*this.unit,
+          // this.increaseCount() 
+          this.$store.dispatch("increaseCount")               
+        this.$store.dispatch("addToCart",{
+          posId:todo.id,
+          delId:Date.now(),
+          productPrice:todo.productPrice, 
+          productPosCount:this.$store.state.count,
+          productPosName: todo.productName,
+          productPosGender:todo.productGender,
+          productPosSize:todo.productSize,
+          productPosColor:todo.productColor,
+          productPosTax:todo.productTax,
+          productPosDate:new Date().getDate()+"-"+new Date().getMonth()+"-"+new Date().getFullYear(),
+          productPosTime:new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds(),
+          productPosTimestamp:Date.now(),
+          productQuantity: this.unit,
+          productTotalPrice: todo.productPrice*this.unit,
         })
-         this.calculateTotalPrice()
-         this.changeCheckOutHeader()
+         this.$store.dispatch("changeCheckOutHeader")
         }
         this.overlay = false
         this.unit = 0
+      }
+
+      updated(){
+         this.$store.dispatch("calculateTotalPrice")
       }
 }
 </script>

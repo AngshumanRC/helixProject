@@ -3,7 +3,7 @@
       <div class="update">
         <div v-if="switchProductsField">
           <div v-if="switchName">
-          <v-text-field v-model="product_name" type="text" label="Product"></v-text-field>
+          <v-text-field v-model="productName" type="text" label="Product"></v-text-field>
           </div>
           <div v-if="switchSize">
           <v-select v-model="size" :items="items" label="Select Size"></v-select>
@@ -51,13 +51,12 @@ export default class Home extends Vue {
 
   currId = this.$route.params.id;
   product = this.$store.state.todos.find((course: any)=> course.id==this.currId);
-  updateTodo!: any;
-  size=this.product.product_size;
-  product_name=this.product.product_name;
-  gender=this.product.product_gender;
-  color=this.product.product_color;
-  price=this.product.product_price;
-  tax=this.product.product_tax;
+  size=this.product.productSize;
+  productName=this.product.productName;
+  gender=this.product.productGender;
+  color=this.product.productColor;
+  price=this.product.productPrice;
+  tax=this.product.productTax;
 
 
     data () {
@@ -68,14 +67,14 @@ export default class Home extends Vue {
     }
 
     updateTodoI(){
-      this.updateTodo({
+      this.$store.dispatch("updateTodo",{
         id: this.product.id,
-        product_name: this.product_name,
-        product_gender:this.gender,
-        product_size: this.size,
-        product_color:this.color,
-        product_price:this.price,
-        product_tax:this.tax,
+        productName: this.productName,
+        productGender:this.gender,
+        productSize: this.size,
+        productColor:this.color,
+        productPrice:this.price,
+        productTax:this.tax,
       })
     }
 }

@@ -7,7 +7,7 @@
     >
       <v-tab class="tabs">PRODUCTS</v-tab>
       <v-tab-item class="product_tabitem">
-          <v-text-field v-model="product_name" type="text" label="Product"></v-text-field>
+          <v-text-field v-model="productName" type="text" label="Product"></v-text-field>
           <v-select v-model="select" item-value="abbr" item-text="state" :items="items" label="Select Size"></v-select>
           <v-radio-group v-model="row" row>
              <v-radio label="Male" value="Male"></v-radio>
@@ -38,9 +38,7 @@ import { mapActions } from 'vuex'
 })
 export default class Home extends Vue {
 
-
-  addTodo!: any;
-  product_name="";
+  productName="";
   row="";
   select!: string;
   selectColor!: string;
@@ -70,14 +68,14 @@ export default class Home extends Vue {
     }
 
     addTodoI(){
-      this.addTodo({
+      this.$store.dispatch("addTodo",{
         id: Date.now(),
-        product_name: this.product_name,
-        product_gender:this.row,
-        product_size: this.select,
-        product_color:this.selectColor,
-        product_price:this.price,
-        product_tax:this.tax,
+        productName: this.productName,
+        productGender:this.row,
+        productSize: this.select,
+        productColor:this.selectColor,
+        productPrice:this.price,
+        productTax:this.tax,
       })
     }
 }

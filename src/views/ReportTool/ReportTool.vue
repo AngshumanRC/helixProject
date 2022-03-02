@@ -21,17 +21,17 @@
       </thead>
       <tbody v-for="(tool,y) in ReportTool" :key="y">
         <tr v-for="(todo,i) in tool" :key="i">
-          <td>{{todo.product_pos_count}}</td>
-          <td>{{todo.product_pos_name}}</td>
-          <td>{{todo.product_quantity}}</td>
-          <td>{{todo.product_pos_gender}}</td>
-          <td>{{todo.product_pos_size}}</td>
-          <td>{{todo.product_pos_color}}</td>
-          <td>{{todo.product_pos_tax}}</td>
-          <td>{{todo.product_pos_date}}</td>
-          <td>{{todo.product_pos_time}}</td>
-          <td>{{todo.product_pos_timestamp}}</td>
-          <td>{{todo.product_total_price}}</td>
+          <td>{{todo.productPosCount}}</td>
+          <td>{{todo.productPosName}}</td>
+          <td>{{todo.productQuantity}}</td>
+          <td>{{todo.productPosGender}}</td>
+          <td>{{todo.productPosSize}}</td>
+          <td>{{todo.productPosColor}}</td>
+          <td>{{todo.productPosTax}}</td>
+          <td>{{todo.productPosDate}}</td>
+          <td>{{todo.productPosTime}}</td>
+          <td>{{todo.productPosTimestamp}}</td>
+          <td>{{todo.productTotalPrice}}</td>
         </tr>
       </tbody>
     </template>
@@ -41,18 +41,29 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ProductPos from '../components/ProductPos.vue'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import axios from 'axios'
 
 @Component({
-  components: { 
-    ProductPos 
-  },
   computed:{
     ...mapGetters(["ReportTool"])
   },
+  methods:{
+    ...mapActions(["reportToolListingAction"])
+  }
 })
-export default class Pos extends Vue {}
+export default class ReportTool extends Vue {
+
+  async mounted(){
+    const res = await axios.get('http://localhost:3000/reporttool')
+    this.$store.dispatch("reportToolListingAction",res.data)
+  }
+
+  async updated(){
+    const res = await axios.get('http://localhost:3000/todos')
+    this.$store.dispatch("reportToolListingAction",res.data)
+  }
+}
 </script>
 <style scoped>
 .header{

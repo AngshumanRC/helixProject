@@ -1,21 +1,15 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import Product from '../views/Product.vue'
-import About from '../views/About.vue'
-import Add from '../views/Add.vue'
-import Update from '../views/Update.vue'
-import Permission from '../views/Permission.vue'
-import Pos from '../views/Pos.vue'
-import ReportTool from '../views/ReportTool.vue'
+import Product from '../views/Product/Product.vue'
+import Add from '../views/Add/Add.vue'
+import Update from '../views/Update/Update.vue'
+import Permission from '../views/Permission/Permission.vue'
+import Pos from '../views/Pos/Pos.vue'
+import ReportTool from '../views/ReportTool/ReportTool.vue'
 
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
-  {
-    path: '/about',
-    name: 'About',
-    component: About
-  },
   {
     path: '/add',
     name: 'Add',
